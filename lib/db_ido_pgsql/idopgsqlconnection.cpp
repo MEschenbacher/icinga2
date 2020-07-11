@@ -676,7 +676,7 @@ bool IdoPgsqlConnection::FieldToEscapedString(const String& key, const Value& va
 	} else if (DbValue::IsTimestamp(value)) {
 		long ts = rawvalue;
 		std::ostringstream msgbuf;
-		msgbuf << "TO_TIMESTAMP(" << ts << ") AT TIME ZONE 'UTC'";
+		msgbuf << ts << "::timestamptz AT TIME ZONE 'UTC'";
 		*result = Value(msgbuf.str());
 	} else if (DbValue::IsObjectInsertID(value)) {
 		auto id = static_cast<long>(rawvalue);
@@ -963,7 +963,7 @@ void IdoPgsqlConnection::InternalCleanUpExecuteQuery(const String& table, const 
 
 	Query("DELETE FROM " + GetTablePrefix() + table + " WHERE instance_id = " +
 		Convert::ToString(static_cast<long>(m_InstanceID)) + " AND " + time_column +
-		" < TO_TIMESTAMP(" + Convert::ToString(static_cast<long>(max_age)) + ") AT TIME ZONE 'UTC'");
+		" < " + Convert::ToString(static_cast<long>(max_age)) + "::timestamptz AT TIME ZONE 'UTC'");
 }
 
 void IdoPgsqlConnection::FillIDCache(const DbType::Ptr& type)
