@@ -313,7 +313,7 @@ void IdoPgsqlConnection::Reconnect()
 	/* we have an endpoint in a cluster setup, so decide if we can proceed here */
 	if (my_endpoint && GetHAMode() == HARunOnce) {
 		/* get the current endpoint writing to programstatus table */
-		result = Query("SELECT UNIX_TIMESTAMP(status_update_time) AS status_update_time, endpoint_name FROM " +
+		result = Query("SELECT CAST(EXTRACT(EPOCH FROM status_update_time) AS bigint) status_update_time, endpoint_name FROM " +
 			GetTablePrefix() + "programstatus WHERE instance_id = " + Convert::ToString(m_InstanceID));
 		row = FetchRow(result, 0);
 
